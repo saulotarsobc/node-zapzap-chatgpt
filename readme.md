@@ -73,4 +73,4 @@ git push origin minha-contribuica
 
 ## Licença
 
-Este projeto é licenciado sob a licença MIT - veja o arquivo LICENSE.md para mais detalhes.
+Este projeto é licenciado sob a licença MIT - veja o arquivo [LICENSE.md](./LICENSE.md) para mais detalhes.
