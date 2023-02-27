@@ -35,17 +35,20 @@ client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
-client.on('ready', async() => {
+client.on("ready", async() => {
+    console.log("\n=====");
     console.log("WhatsApp Web v", await client.getWWebVersion());
     console.log("WWebJS v", require("whatsapp-web.js").version);
+    console.log("=====\n");
 });
 
 client.on("message", async(message) => {
-    // console.log(message);
-    if (message.body.startsWith("!bot ")) {
+    console.log(message);
+    // if (message.body.startsWith("!bot ")) {
+    if (message.from.includes("@c.us")) {
         console.log(message);
-        // if (message.from != 'status@broadcast') {
-        const mensagem = message.body.split("!bot ")[1];
+        // const mensagem = message.body.split("!bot ")[1];
+        const mensagem = message.body;
 
         const chat = await message.getChat();
         const chatID = chat.id._serialized;
@@ -55,8 +58,8 @@ client.on("message", async(message) => {
         const resposta = await send_to_gpt(mensagem, chatID);
         console.log(resposta);
         message.reply(resposta);
-    }
-    if (message.body.startsWith("!img ")) {
+
+    } else if (message.body.startsWith("!img ")) {
         console.log(message);
         const descricao = message.body.split("!img ")[1];
         const chat = await message.getChat();
@@ -68,9 +71,6 @@ client.on("message", async(message) => {
 });
 
 async function send_to_gpt(mensagem, chatID) {
-    // const chatID = "559321015380@c.us";
-    // const mensagem = "Conhece a hcode treinamentos?";
-
     await Mensagens.create({ chatID: chatID, mensagem: mensagem + "\n" })
         .then(() => console.log("Mensagem do usuario gravada"))
         .catch((e) => console.log(e));
@@ -94,7 +94,7 @@ async function send_to_gpt(mensagem, chatID) {
     const completion = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: conversa,
-        temperature: 0,
+        temperature: 0.5,
         max_tokens: 1000,
     });
 

@@ -1,6 +1,8 @@
 # Bot Chat com NodeJS usando ChatGPT e a lib WhatsApp.js
 
-![open ia logo](image/README/1677193461266.png)
+<center>
+<img src="./image/README/1677193461266.png">
+</center>
 
 Este é um projeto de bot chat desenvolvido em NodeJS utilizando a biblioteca WhatsApp.js e a API de inteligência artificial ChatGPT da OpenAI. O objetivo é fornecer uma interface interativapara os usuários se comunicarem com o bot e receberem respostas relevantes e contextualizadas.
 
@@ -28,8 +30,10 @@ npm install
 
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis de ambiente:
 
+```bash
 OPENAI_API_KEY=chave-de-api-do-chatgpt
 OPENAI_API_ORG=id-da-organizacao-do-chatgpt
+```
 
 Substitua `chave-de-api-do-chatgpt` pela chave de API fornecida pela plataforma OpenAI e `id-da-organizacao-do-chatgpt` pelo número de telefone celular que será usado para enviar e receber mensagens via WhatsApp.
 
