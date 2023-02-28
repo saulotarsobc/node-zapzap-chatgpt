@@ -18,6 +18,7 @@ const openai = new OpenAIApi(configuration);
 const client = new Client({
     authStrategy: new LocalAuth({ clientId: "BOT-01" }),
     puppeteer: {
+        headless: true, // para mostrar o navegador > false
         args: [
             "--no-sandbox",
             "--disable-setuid-sandbox",
@@ -42,28 +43,21 @@ client.on("ready", async() => {
     console.log("=====\n");
 });
 
+client.initialize();
+
 client.on("message", async(message) => {
     console.log(message);
-    // if (message.body.startsWith("!bot ")) {
-    if (message.from.includes("@c.us")) {
-        console.log(message);
-        // const mensagem = message.body.split("!bot ")[1];
-        const mensagem = message.body;
+    const chat = await message.getChat();
+    const chatID = chat.id._serialized;
 
-        const chat = await message.getChat();
-        const chatID = chat.id._serialized;
-
+    if (message.body.startsWith("!bot ")) {
+        const mensagem = message.body.split("!bot ")[1];
         chat.sendStateTyping();
-
         const resposta = await send_to_gpt(mensagem, chatID);
-        console.log(resposta);
         message.reply(resposta);
 
     } else if (message.body.startsWith("!img ")) {
-        console.log(message);
         const descricao = message.body.split("!img ")[1];
-        const chat = await message.getChat();
-        const chatID = chat.id._serialized;
         const urlImage = await getImageFromChat(descricao);
         const media = await MessageMedia.fromUrl(urlImage);
         client.sendMessage(chatID, media, { caption: descricao });
@@ -76,7 +70,7 @@ async function send_to_gpt(mensagem, chatID) {
         .catch((e) => console.log(e));
 
     const conversa = await Mensagens.findAll({
-            where: { chatID: chatID },
+            where: { chatID },
             raw: true,
         })
         .then((conversa) => {
@@ -89,24 +83,19 @@ async function send_to_gpt(mensagem, chatID) {
         })
         .catch((e) => console.log(e));
 
-    console.log(conversa);
-
     const completion = await openai.createCompletion({
         model: "text-davinci-003",
         prompt: conversa,
         temperature: 0.5,
         max_tokens: 1000,
     });
-
     const respostaDoBot = completion.data.choices[0].text;
-
     await Mensagens.create({
         chatID,
         mensagem: respostaDoBot + "\n",
     });
-
     return respostaDoBot;
-}
+};
 
 async function getImageFromChat(descricao) {
     const image = await openai.createImage({
@@ -114,10 +103,6 @@ async function getImageFromChat(descricao) {
         n: 1,
         size: "1024x1024",
     });
-
     const urlDaImagem = image.data.data[0].url;
-
     return urlDaImagem;
-}
-
-client.initialize();
+};
