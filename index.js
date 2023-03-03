@@ -50,14 +50,14 @@ client.on("message", async(message) => {
     const chat = await message.getChat();
     const chatID = chat.id._serialized;
 
-    if (message.body.startsWith("!bot ")) {
-        const mensagem = message.body.split("!bot ")[1];
+    if (message.body.startsWith("/bot ")) {
+        const mensagem = message.body.split("/bot ")[1];
         chat.sendStateTyping();
         const resposta = await send_to_gpt(mensagem, chatID);
         message.reply(resposta);
 
-    } else if (message.body.startsWith("!img ")) {
-        const descricao = message.body.split("!img ")[1];
+    } else if (message.body.startsWith("/img ")) {
+        const descricao = message.body.split("/img ")[1];
         const urlImage = await getImageFromChat(descricao);
         const media = await MessageMedia.fromUrl(urlImage);
         client.sendMessage(chatID, media, { caption: descricao });
