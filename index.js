@@ -36,7 +36,7 @@ client.on("qr", (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
-client.on("ready", async() => {
+client.on("ready", async () => {
     console.log("\n=====");
     console.log("WhatsApp Web v", await client.getWWebVersion());
     console.log("WWebJS v", require("whatsapp-web.js").version);
@@ -45,7 +45,7 @@ client.on("ready", async() => {
 
 client.initialize();
 
-client.on("message", async(message) => {
+client.on("message", async (message) => {
     console.log(message);
     const chat = await message.getChat();
     const chatID = chat.id._serialized;
@@ -55,9 +55,15 @@ client.on("message", async(message) => {
         chat.sendStateTyping();
         const resposta = await send_to_gpt(mensagem, chatID);
         message.reply(resposta);
-
-    } else if (message.body.startsWith("/img ")) {
+    }
+    else if (message.body.startsWith("/img ")) {
         const descricao = message.body.split("/img ")[1];
+        const urlImage = await getImageFromChat(descricao);
+        const media = await MessageMedia.fromUrl(urlImage);
+        client.sendMessage(chatID, media, { caption: descricao });
+    }
+    else if (message.body.startsWith("/b ")) {
+        const body = message.body.split("/b ")[1];
         const urlImage = await getImageFromChat(descricao);
         const media = await MessageMedia.fromUrl(urlImage);
         client.sendMessage(chatID, media, { caption: descricao });
@@ -70,9 +76,9 @@ async function send_to_gpt(mensagem, chatID) {
         .catch((e) => console.log(e));
 
     const conversa = await Mensagens.findAll({
-            where: { chatID },
-            raw: true,
-        })
+        where: { chatID },
+        raw: true,
+    })
         .then((conversa) => {
             console.log("Conversa encontrada");
             let conversaCompleta = "";
